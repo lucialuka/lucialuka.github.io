@@ -71,19 +71,19 @@ $('.signal-button').addEventListener('click', () => {
   }, reducedMotion.matches ? 100 : 1600);
 });
 
-// These are illustrative snippets, not a compiler running in the browser.
+// Illustrative OpenAssembler compilation stages, based on its PTX-to-SASS workflow.
 const compilerStages = {
   ptx: {
-    filename: 'vector_add.ptx',
-    code: '<span class="code-comment">// From intent to instructions.</span>\n<span class="code-orange">.visible .entry</span> vector_add(\n    <span class="code-green">.param .u64</span> input_a,\n    <span class="code-green">.param .u64</span> input_b\n) {\n    <span class="code-orange">add.f32</span> %f3, %f1, %f2;\n    <span class="code-orange">st.global.f32</span> [%rd3], %f3;\n}'
+    filename: 'gemm_fp16.ptx',
+    code: '<span class="code-comment">// Capture a tensor tile and lower it.</span>\n<span class="code-orange">.visible .entry</span> gemm_fp16(\n    <span class="code-green">.param .u64</span> A, B, C\n) {\n    <span class="code-orange">mma.sync.aligned.m16n8k16</span>\n      row.col.f32.f16.f16.f32;\n}'
   },
-  ir: {
-    filename: 'backend / intermediate representation',
-    code: '<span class="code-comment">// A bridge between two worlds.</span>\n<span class="code-green">v0</span> ← load input_a[tid]\n<span class="code-green">v1</span> ← load input_b[tid]\n<span class="code-green">v2</span> ← <span class="code-orange">add.f32</span> v0, v1\n\n<span class="code-comment">// Select → allocate → schedule</span>\n<span class="code-orange">store</span> output[tid], v2\n<span class="code-orange">exit</span>'
+  encode: {
+    filename: 'sm80 / encoder trace',
+    code: '<span class="code-comment">// Match the PTX operation to Ampere.</span>\n<span class="code-green">select</span>  mma.sync.m16n8k16\n<span class="code-green">lower</span>   HMMA.16816.F32\n<span class="code-orange">encode</span>  0x0000000000007918\n\n<span class="code-comment">// Preserve cubin metadata, then verify.</span>\n<span class="code-orange">patch</span>   .text.gemm_fp16\n<span class="code-orange">check</span>   numerical + launch contract'
   },
   sass: {
-    filename: 'vector_add.sass / sm_80',
-    code: '<span class="code-comment">// Closer to the silicon.</span>\n<span class="code-orange">LDG.E</span>       R2, [R4.64];\n<span class="code-orange">LDG.E</span>       R3, [R6.64];\n<span class="code-orange">FADD</span>        R8, R2, R3;\n<span class="code-orange">STG.E</span>       [R10.64], R8;\n<span class="code-orange">EXIT</span>;\n\n<span class="code-green">// Encoded by OpenAssembler.</span>'
+    filename: 'gemm_fp16.sass / sm_80',
+    code: '<span class="code-comment">// Native instructions for the selected tile.</span>\n<span class="code-orange">LDG.E.64</span>      R2, [R4.64];\n<span class="code-orange">HMMA.16816.F32</span> R16, R2, R6, R16;\n<span class="code-orange">STG.E.64</span>      [R10.64], R16;\n<span class="code-orange">EXIT</span>;\n\n<span class="code-green">// Encoded by OpenAssembler for SM80.</span>'
   }
 };
 $$('.compiler-stages button').forEach(button => button.addEventListener('click', () => {

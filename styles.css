@@ -802,6 +802,13 @@ button[hidden],
   opacity: .45;
   white-space: nowrap;
 }
+.openassembler-logo {
+  width: 82px;
+  height: 15px;
+  object-fit: contain;
+  background: #000;
+  opacity: .9;
+}
 .compiler-visual {
   padding: 39px 42px 29px;
 }
@@ -3642,6 +3649,65 @@ dialog[open] {
 }
 .about-copy>.text-link {
   font-size: 13px;
+}
+
+/* Keep site content comfortably readable without rescaling miniature interface previews. */
+.hero-intro {
+  font-size: 17px;
+  line-height: 1.78;
+}
+.eyebrow,
+.desktop-nav a,
+.header-contact,
+.button,
+.text-link,
+.section-heading>p,
+.work-filters button,
+.work-footer>span,
+.project-overline,
+.project-tags span,
+.project-metrics>div>span,
+.metric-note,
+.about-copy>p:not(.large-copy),
+.skills-grid p,
+.experience-date,
+.recognition>div>span,
+.recognition-note,
+.case-source {
+  font-size: 13px;
+}
+.project-description,
+.experience-item summary p,
+.experience-details p,
+.recognition p,
+.case-panel p,
+.case-panel ul,
+.case-panel ol {
+  font-size: 15px;
+}
+.experience-item h3 {
+  font-size: 16px;
+}
+.case-panel table {
+  font-size: 13px;
+}
+.case-panel th {
+  font-size: 12px;
+}
+@media(max-width:720px) {
+  .hero-intro {
+    font-size: 15px;
+    line-height: 1.8;
+  }
+  .project-description,
+  .experience-item summary p,
+  .experience-details p,
+  .recognition p,
+  .case-panel p,
+  .case-panel ul,
+  .case-panel ol {
+    font-size: 14px;
+  }
 }
 @media(max-width:960px) and (min-width:721px) {
   .project-description {
