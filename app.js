@@ -4,37 +4,26 @@ document.documentElement.classList.add('js');
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-const github = 'https://github.com/Qingyang-Lucas-Fang/';
+const github = 'https://github.com/lucialuka/';
 
-// Keep the fine details in SVG: sharp at every size and independent of WebGL.
-const svgNS = 'http://www.w3.org/2000/svg';
-function svgElement(tag, attributes) {
-  const element = document.createElementNS(svgNS, tag);
-  Object.entries(attributes).forEach(([key, value]) => element.setAttribute(key, value));
-  return element;
+// Theme: the initial value is set by an inline script in <head> (no flash); this wires up the toggle.
+const themeToggle = $('.theme-toggle');
+const themeMeta = $('meta[name=theme-color]');
+function applyTheme(theme, persist) {
+  document.documentElement.dataset.theme = theme;
+  if (themeMeta) themeMeta.content = theme === 'dark' ? '#14160f' : '#f6f5f1';
+  themeToggle.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+  $('use', themeToggle).setAttribute('href', theme === 'dark' ? '#i-sun' : '#i-moon');
+  if (persist) { try { localStorage.setItem('theme', theme); } catch { /* storage blocked: toggle still works for this visit */ } }
 }
-function iso(u, v, centerY = 304) { return [320 + u - v, centerY + (u + v) * .577]; }
-const traces = $('#board-traces');
-for (let side = 0; side < 4; side++) {
-  for (let i = 0; i < 7; i++) {
-    const offset = -47 + i * 15;
-    const sign = side < 2 ? 1 : -1;
-    const points = [[sign * 50, offset], [sign * (70 + i % 3 * 7), offset], [sign * (70 + i % 3 * 7), offset + 9], [sign * 101, offset + 9]];
-    const projected = points.map(([u, v]) => side % 2 ? iso(v, u) : iso(u, v));
-    traces.append(svgElement('polyline', { points: projected.map(p => p.join(',')).join(' '), opacity: .45 + i % 3 * .15 }));
-    const [cx, cy] = projected.at(-1);
-    traces.append(svgElement('circle', { cx, cy, r: 1.7, fill: '#d3d8c7' }));
-  }
-}
-const pins = $('#chip-pins');
-for (let side = 0; side < 4; side++) {
-  for (let offset = -44; offset <= 44; offset += 11) {
-    const sign = side < 2 ? 1 : -1;
-    const start = side % 2 ? iso(offset, sign * 55, 231) : iso(sign * 55, offset, 231);
-    const end = side % 2 ? iso(offset, sign * 65, 231) : iso(sign * 65, offset, 231);
-    pins.append(svgElement('line', { x1: start[0], y1: start[1], x2: end[0], y2: end[1] }));
-  }
-}
+applyTheme(document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light', false);
+themeToggle.addEventListener('click', () => applyTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark', true));
+// Follow the OS setting until the visitor makes an explicit choice.
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+  let stored = null;
+  try { stored = localStorage.getItem('theme'); } catch { /* ignore */ }
+  if (!stored) applyTheme(event.matches ? 'dark' : 'light', false);
+});
 
 const chipScene = $('.chip-scene');
 const layerCopy = {
@@ -174,32 +163,31 @@ const caseStudies = {
     repo: `${github}OpenAssembler`,
     kicker: '01 / OPENASSEMBLER / SYSTEMS & COMPILERS',
     title: 'From source<br>to <span class="serif-word">silicon.</span>',
-    lede: 'A from-scratch PTX-to-SASS code generator, encoder, and emulator for NVIDIA sm_80 (Ampere), grounded in observations of real A100 behavior.',
+    lede: 'A from-scratch PTX-to-SASS compiler, encoder, and emulator for NVIDIA sm_80 (Ampere), with native tensor kernels and explicit application workflows.',
     tabs: [
       { label: 'The architecture', content: `
         <h3>Understanding the layer we usually can’t see.</h3>
         <p>NVIDIA’s <code>ptxas</code> translates PTX into SASS, the machine instructions executed by the GPU. OpenAssembler builds an independent code generator by recovering instruction encodings and studying hardware behavior through black-box observation.</p>
-        <div class="case-pipeline"><div><span>01 / FRONTENDS</span>Python subset<br>CUDA C/C++ · PTX</div><div><span>02 / BACKEND</span>Instruction selection<br>Register allocation</div><div><span>03 / LOWERING</span>Scheduling<br>SASS encoding</div><div><span>04 / EXECUTION</span>ELF code splicing<br>A100 validation</div></div>
-        <h3>A compiler pipeline built end to end.</h3>
-        <ol><li><strong>Select an intermediate representation.</strong> Translate PTX into virtual-register operations and combine eligible instruction patterns.</li><li><strong>Remove unnecessary work.</strong> Eliminate dead code, coalesce copies, and use linear-scan register allocation with copy-affinity hints.</li><li><strong>Schedule for the hardware.</strong> Optionally unroll counted loops 4× and list-schedule basic blocks using measured A100 latencies.</li><li><strong>Encode and package.</strong> Encode SASS instruction words and splice the generated code into a compatible ELF container.</li></ol>
+        <div class="case-pipeline"><div><span>01 / DISCOVERY</span>Python subset<br>CUDA C/C++ · PTX</div><div><span>02 / NATIVE BACKEND</span>Selection · allocation<br>Tensor and scalar paths</div><div><span>03 / APPLICATION</span>torch · triton · inductor<br>Capture · package · verify</div><div><span>04 / EXECUTION</span>Local · SSH · Modal<br>GPU validation</div></div>
+        <h3>A compiler and workflow stack with explicit ownership.</h3>
+        <ol><li><strong>Discover the source.</strong> Select supported Python, PTX, CUDA/C++, or repository kernels while retaining host-program and launch context.</li><li><strong>Choose the route.</strong> Use the native SM80 backend for supported kernels, or select the configured <code>torch</code>, <code>triton</code>, or <code>inductor</code> application frontend explicitly.</li><li><strong>Lower and schedule.</strong> Apply scalar or tensor selection, guarded register allocation, measured scheduling, and supported GEMM or rowwise generators.</li><li><strong>Package and verify.</strong> Splice native code into a compatible cubin, run matched numerical checks, and preserve manifests, runtime state, and replay diagnostics.</li></ol>
         <div class="case-callout"><p><strong>A precise boundary:</strong> this is an independent code generator, not a complete replacement for every part of <code>ptxas</code>. It reuses a <code>ptxas</code>-generated cubin container for symbols, relocations, and constant banks.</p></div>
-        <p>The repository also includes a SASS emulator, a PTX reference interpreter, constant-division lowering verified with z3, and 97 exactly verified fast matrix-multiplication factorizations.</p>` },
+        <p>The repository also includes a SASS emulator, a PTX reference interpreter, constant-division lowering verified with z3, full-tile FP16/BF16 GEMM with FP32 output, and cooperative FP32 softmax and population LayerNorm.</p>` },
       { label: 'Measured results', content: `
         <h3>Performance with the conditions attached.</h3>
-        <p>The repository reports A100-SXM4-40GB wall-clock timings using 4,096 CTAs × 32 threads and 4,096 loop iterations, taking the best median from three shuffled timing rounds.</p>
-        <table><caption class="eyebrow">REPOSITORY-REPORTED A100 BENCHMARKS</caption><thead><tr><th>KERNEL</th><th>PTXAS</th><th>OPENASSEMBLER</th><th>SPEEDUP</th></tr></thead><tbody><tr><td>loop.div7</td><td>0.629 ms</td><td>0.464 ms</td><td>1.36×</td></tr><tr><td>loop.rem1000</td><td>0.373 ms</td><td>0.312 ms</td><td>1.19×</td></tr><tr><td>loop.smem</td><td>0.748 ms</td><td>0.713 ms</td><td>1.05×</td></tr><tr><td>ilp4.imad</td><td>0.257 ms</td><td>0.250 ms</td><td>1.03×</td></tr><tr><td>chain.imad_lop3</td><td>0.129 ms</td><td>0.135 ms</td><td>0.95×</td></tr><tr><td>chain.ffma</td><td>0.089 ms</td><td>0.097 ms</td><td>0.92×</td></tr></tbody></table>
-        <div class="case-callout"><p><strong>1.36× is a result for a selected kernel.</strong> Tight dependent chains remain 5–8% slower than <code>ptxas</code>. These measurements do not establish a general speedup across arbitrary GPU workloads.</p></div>
+        <p>The current status separates native compiler results, library controls, application-front-end results, and experimental research. The repository-level summary reports approximate <strong>10–30% gains on selective kernels</strong>, but the latest native comparisons remain shape-dependent and matched <code>ptxas</code> is faster on the main direct-GEMM and reduction shapes.</p>
+        <table><caption class="eyebrow">LATEST REPOSITORY-REPORTED EVIDENCE</caption><thead><tr><th>AREA</th><th>RESULT</th><th>BOUNDARY</th></tr></thead><tbody><tr><td>Whole transformer</td><td>9 / 10 configurations pass both gates</td><td>One BF16 training row excluded</td></tr><tr><td>Direct-pointer GEMM</td><td>1.03–1.12× on six MLP products</td><td>486 full checks across three runs; ptxas remains faster overall</td></tr><tr><td>Cooperative reductions</td><td>18 shape/operator cases pass</td><td>17,408,740 outputs checked; ptxas remains faster on main shapes</td></tr><tr><td>Native NN campaign</td><td>402 / 402 tensor checks; 134 graph checks</td><td>Experimental methods and six composed networks</td></tr><tr><td>Regression suite</td><td>630 passed</td><td>One optional PyTorch module skipped; its 18 tests pass separately</td></tr></tbody></table>
+        <div class="case-callout"><p><strong>10–30% is a selective-kernel description.</strong> It is not a universal compiler speedup, an automatic model rewrite, or a blanket end-to-end training claim. The source status page preserves slower controls, failed gates, and excluded experiments.</p></div>
         <h3>Correctness before the headline.</h3>
-        <ul><li><strong>110/110 compiler probes</strong> reported bit-exact on A100, with four trials × 32 threads. The compiler subsequently supported 203 probes; the additional 93 were not yet rerun on GPU in the cited README.</li><li><strong>532/541 emulator probes</strong> reported bit-exact or within PTX-specified tolerance against A100 runs.</li><li><strong>206 tests</strong> reported passing with the toolkit and probe corpus present; environment-dependent tests skip on fresh clones.</li><li><strong>13 → 2–3 instructions</strong> for supported constant-division/remainder lowering, with 32-bit equivalence checked using z3.</li></ul>
-        <p>For matrix multiplication at n = 8,192, the reported Strassen variant improves on the project’s direct GEMM by 2.7%, while remaining slightly behind cuBLAS.</p>` },
+        <ul><li><strong>FP16/BF16 GEMM</strong> uses full tiles, contiguous K, FP32 accumulation/output, and explicit tensor-kernel options.</li><li><strong>Cooperative softmax and LayerNorm</strong> cover bounded contiguous FP32 inputs with row/column tails; affine parameters, saved statistics, and backward support are outside the current contract.</li><li><strong>Application replay</strong> checks captured runtime state and all tensors, but retains the configured Python/PyTorch/ATen dependencies.</li><li><strong>Experimental results</strong> remain separated from production defaults; slower or rejected methods are retained in the research catalogue rather than promoted.</li></ul>` },
       { label: 'Scope & next steps', content: `
         <h3>Built with explicit edges.</h3>
-        <ul><li><strong>Architecture:</strong> the encoder and latency model target sm_80 / Ampere. Additional GPU architectures are future work.</li><li><strong>Language coverage:</strong> the Python frontend supports a subset; CUDA C/C++ is lowered to PTX by <code>nvcc</code> before this backend takes over.</li><li><strong>Compiler gaps:</strong> no f16/f64 arithmetic, warp shuffles/votes, register spilling, float division or square root, or pointer-increment loops in the documented scope.</li><li><strong>Packaging dependency:</strong> a toolkit-generated cubin supplies the ELF container. No NVIDIA binaries are redistributed by the project.</li></ul>
-        <h3>The next interesting problems.</h3><p>Improve dependent-chain scheduling, explore tensor-core GEMM and asynchronous copy pipelining, and extend the encoding and latency models to more architectures. These are proposed directions, not completed capabilities.</p>
+        <ul><li><strong>Architecture:</strong> the encoder and latency model target sm_80 / Ampere. Additional GPU architectures remain future work.</li><li><strong>Native GEMM:</strong> full-tile <code>C=A@B.T</code>, contiguous K, FP32 accumulation/output, fixed launch contracts, and explicit traversal/epilogue/pointer options.</li><li><strong>Rowwise operators:</strong> bounded contiguous FP32 softmax and population LayerNorm with tails; no affine parameters, saved statistics, or backward support.</li><li><strong>Application route:</strong> <code>torch</code>, <code>triton</code>, and <code>inductor</code> are explicit frontends with captured shapes, retained runtime dependencies, and state verification.</li><li><strong>Packaging dependency:</strong> a toolkit-generated cubin supplies the ELF container. No NVIDIA binaries are redistributed by the project.</li></ul>
+        <h3>The next interesting problems.</h3><p>Improve shape-aware dispatch, dependent-chain scheduling, native/application boundaries, and support for more architectures while preserving the source project’s explicit negative controls. These are ongoing directions, not universal capabilities.</p>
         <div class="case-callout"><p><strong>Why it matters:</strong> compiler quality depends on understanding the machine. This project puts the software–hardware boundary under a microscope and turns that understanding into an executable tool.</p></div>
         <p><strong>License:</strong> Apache 2.0, with third-party attributions maintained in the repository’s NOTICE.</p>` }
     ],
-    source: `Sources: <a href="${github}OpenAssembler#readme" target="_blank" rel="noopener noreferrer">project README</a>, <a href="${github}OpenAssembler/blob/main/REPRODUCING.md" target="_blank" rel="noopener noreferrer">reproduction guide</a>, and <a href="${github}OpenAssembler/blob/main/docs/STATUS.md" target="_blank" rel="noopener noreferrer">status notes</a>. Results are repository-reported, not independently rerun for this website. Content reviewed November 2, 2026.`
+    source: `Sources: <a href="${github}OpenAssembler#readme" target="_blank" rel="noopener noreferrer">project README</a>, <a href="${github}OpenAssembler/blob/main/docs/STATUS.md" target="_blank" rel="noopener noreferrer">architecture and status</a>, <a href="${github}OpenAssembler/blob/main/docs/COMMANDS.md" target="_blank" rel="noopener noreferrer">command reference</a>, and <a href="${github}OpenAssembler/tree/main/docs/research" target="_blank" rel="noopener noreferrer">research catalogue</a>. Results are repository-reported, not independently rerun for this website. Content reviewed November 8, 2026.`
   },
   grandtool: {
     repo: `${github}AI-Automated-UI-Design-Workflow-From-Prompt-to-Demo`,
