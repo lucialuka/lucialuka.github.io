@@ -27,9 +27,9 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', eve
 
 const chipScene = $('.chip-scene');
 const layerCopy = {
-  hardware: 'Every abstraction eventually meets a physical machine.',
-  software: 'A good idea becomes a language the machine can understand.',
-  codesign: 'The interesting things happen between the layers.'
+  hardware: 'Memory routes data to the chip, executes the work, and returns a result.',
+  software: 'Source becomes an intermediate representation, then instructions the machine can understand.',
+  codesign: 'Source → IR → schedule → tensor core → memory. The interesting things happen between layers.'
 };
 $$('.layer-controls button').forEach(button => {
   button.addEventListener('click', () => {
@@ -111,9 +111,9 @@ $$('.work-filters button').forEach(button => button.addEventListener('click', ()
 }));
 
 const demoPresets = {
-  analytics: { title: 'Good morning, builder.', label: 'Total revenue', stat: '$24,680', change: '↗ 12.8%', chart: 'A clearer view of your growth', accent: '#7e8b68' },
-  portfolio: { title: 'Ideas, meet execution.', label: 'Selected projects', stat: '02', change: 'Built with curiosity', chart: 'A little progress, every day', accent: '#b96b48' },
-  product: { title: 'Make room for better.', label: 'Early supporters', stat: '1,280', change: '↗ 24.6%', chart: 'A small idea, growing steadily', accent: '#7e829b' }
+  analytics: { title: 'Good morning, builder.', label: 'Total revenue', stat: '$24,680', change: '↗ 12.8%', chart: 'A clearer view of your growth', accent: '#7d96d8' },
+  portfolio: { title: 'Ideas, meet execution.', label: 'Selected projects', stat: '02', change: 'Built with curiosity', chart: 'A little progress, every day', accent: '#8a74ca' },
+  product: { title: 'Make room for better.', label: 'Early supporters', stat: '1,280', change: '↗ 24.6%', chart: 'A small idea, growing steadily', accent: '#d3b45f' }
 };
 const workflowMessages = ['Understanding the prompt → creating a blueprint', 'Turning the blueprint into a design', 'Reviewing the design → human checkpoint', 'Demo preview ready. Your next idea starts here.'];
 let workflowTimers = [];

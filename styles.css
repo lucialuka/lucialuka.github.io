@@ -3938,3 +3938,388 @@ dialog[open] {
   .chip-svg { height: auto; }
   .signal-button { right: 0; bottom: 4px; }
 }
+
+/* Fluid glass theme: cool neutrals with restrained violet, blue, and yellow accents. */
+:root {
+  color-scheme: light;
+  --paper: #f7f8ff;
+  --paper-deep: #eceffd;
+  --raised: rgba(255,255,255,.72);
+  --ink: #282a3e;
+  --muted: #606985;
+  --faint: #7e87a1;
+  --line: rgba(82,96,146,.18);
+  --line-strong: rgba(82,96,146,.32);
+  --copper: #7663bd;
+  --copper-light: #e3defa;
+  --sage: #76a7d5;
+  --dot: rgba(119,148,211,.18);
+  --contact-bg: #f8efcf;
+  --contact-ink: #303147;
+  --glass: rgba(255,255,255,.66);
+  --glass-strong: rgba(250,251,255,.84);
+  --shadow: 0 18px 52px rgba(56,67,112,.12);
+}
+:root[data-theme=dark] {
+  color-scheme: dark;
+  --paper: #11131f;
+  --paper-deep: #191c2d;
+  --raised: rgba(35,39,61,.72);
+  --ink: #f0f2ff;
+  --muted: #c0c7e0;
+  --faint: #9099b8;
+  --line: rgba(173,187,236,.15);
+  --line-strong: rgba(173,187,236,.28);
+  --copper: #a99aed;
+  --copper-light: #34345c;
+  --sage: #83bce8;
+  --dot: rgba(131,158,225,.16);
+  --contact-bg: #302d58;
+  --contact-ink: #f4f2ff;
+  --glass: rgba(27,31,50,.72);
+  --glass-strong: rgba(31,35,57,.88);
+  --shadow: 0 22px 64px rgba(0,0,0,.32);
+}
+
+body {
+  background: var(--paper);
+}
+::selection {
+  background: var(--copper-light);
+  color: var(--ink);
+}
+.site-header {
+  position: sticky;
+  top: 0;
+  background: var(--glass);
+  backdrop-filter: blur(20px) saturate(1.08);
+  -webkit-backdrop-filter: blur(20px) saturate(1.08);
+  border-bottom-color: var(--line);
+  z-index: 20;
+}
+.theme-toggle,
+.command-trigger,
+.signal-button {
+  background: var(--glass-strong);
+  backdrop-filter: blur(16px) saturate(1.06);
+  -webkit-backdrop-filter: blur(16px) saturate(1.06);
+}
+.hero-visual .visual-topline,
+.layer-controls,
+.layer-description,
+.layer-legend {
+  background: var(--glass);
+  backdrop-filter: blur(15px) saturate(1.04);
+  -webkit-backdrop-filter: blur(15px) saturate(1.04);
+}
+.visual-topline {
+  border: 1px solid var(--line);
+  border-bottom: 0;
+  border-radius: 12px 12px 0 0;
+}
+.layer-controls {
+  border-inline: 1px solid var(--line);
+}
+.layer-description {
+  border: 1px solid var(--line);
+  border-top: 0;
+  border-radius: 0 0 12px 12px;
+  padding-bottom: 10px;
+}
+.layer-controls button.is-active {
+  background: rgba(118,99,189,.13);
+  color: var(--ink);
+}
+.live-label i,
+.workflow-status-dot {
+  background: var(--sage);
+}
+.scroll-cue-line {
+  background: var(--sage);
+}
+
+/* Update the hero diagram without changing its structural layers. */
+.chip-scene {
+  --d-board-a: #dce9fa; --d-board-b: #c9dbef; --d-board-side: #b3c7e1; --d-board-edge: #849bb9;
+  --d-grid: #afc5df; --d-trace: #7899bf; --d-part: #9fb9d8;
+  --d-chip-side: #343552; --d-chip-top: #514e78; --d-pin: #eadc9d;
+  --d-lid-side: #6c5daa; --d-lid-top: #8c78cf; --d-die: #a6c8ea; --d-die-edge: #eef5ff; --d-chip-text: #fff;
+  --d-glass: #ffffffbf; --d-glass-side: #dbe5f4; --d-glass-edge: #afc1dc; --d-card: #fafbff; --d-card-edge: #afc5df;
+  --d-bar-a: #7764bf; --d-bar-b: #75a9d7; --d-bar-c: #e2c86f;
+  --d-guide: #8d9db8; --d-shadow: #596585; --d-signal: #7663bd;
+  --d-bus: #8aa6cd; --d-memory: #d5e4f7; --d-process: #7663bd; --d-process-text: #7181a1;
+}
+:root[data-theme=dark] .chip-scene {
+  --d-board-a: #282d49; --d-board-b: #20243c; --d-board-side: #181b2e; --d-board-edge: #596488;
+  --d-grid: #3e496d; --d-trace: #7082b1; --d-part: #3d4669;
+  --d-chip-side: #161827; --d-chip-top: #2c3154; --d-pin: #d9c879;
+  --d-lid-side: #584a9c; --d-lid-top: #7868c3; --d-die: #8eb9e2; --d-die-edge: #cde5ff; --d-chip-text: #fff;
+  --d-glass: #373d6199; --d-glass-side: #262b46; --d-glass-edge: #6472a1; --d-card: #191c2d; --d-card-edge: #4e5a80;
+  --d-bar-a: #a99aed; --d-bar-b: #82bde8; --d-bar-c: #e8d37e;
+  --d-guide: #68759d; --d-shadow: #000; --d-signal: #a99aed;
+  --d-bus: #7188bd; --d-memory: #3b496d; --d-process: #a99aed; --d-process-text: #b6c1df;
+}
+
+/* A single enclosure connects the figure header, the diagram, and its controls. */
+.chip-scene {
+  box-sizing: border-box;
+  border-inline: 1px solid var(--line);
+  background: rgba(255,255,255,.12);
+}
+:root[data-theme=dark] .chip-scene { background: rgba(255,255,255,.015); }
+.d-bus { fill: none; stroke: var(--d-bus); stroke-width: 1.15; stroke-dasharray: 2 3; }
+.d-memory { fill: var(--d-memory); stroke: var(--d-bus); stroke-width: .9; }
+.d-memory-mark { fill: none; stroke: var(--d-bus); stroke-width: 1; }
+.d-compute-ring { fill: none; stroke: var(--d-die-edge); stroke-width: 1; stroke-dasharray: 2 2; }
+.d-compute-lane { fill: none; stroke: var(--d-process); stroke-width: 1; opacity: .8; }
+.d-compute-node { fill: var(--d-process); }
+.d-software-flow { stroke: var(--d-process); stroke-width: 3.5; }
+.d-matrix-line { fill: none; stroke: var(--d-die-edge); stroke-width: .8; opacity: .8; }
+.d-matrix-cell { fill: var(--d-bar-c); stroke: var(--d-chip-top); stroke-width: .45; }
+.d-process-route { fill: none; stroke: var(--d-process); stroke-width: 1.1; stroke-dasharray: 2 3; opacity: .68; }
+.d-process-packet { fill: var(--d-bar-c); opacity: .56; transform-box: fill-box; transform-origin: center; }
+
+/* The light-mode primary action stays prominent without becoming a dark block. */
+:root:not([data-theme=dark]) .button-dark {
+  background: #e8e5fb;
+  border: 1px solid #d4cef1;
+  color: #343653;
+}
+:root:not([data-theme=dark]) .button-dark:hover { background: #dcd7f5; }
+
+/* A compact map replaces the overlapping discipline orbits. */
+.discipline-map { display: block; width: 100%; height: 100%; overflow: visible; }
+.map-grid { fill: none; stroke: var(--line); stroke-width: 1; stroke-dasharray: 2 5; }
+.map-link { fill: none; stroke: var(--sage); stroke-width: 1.25; opacity: .8; }
+.map-link-strong { stroke: var(--copper); stroke-dasharray: 3 4; }
+.map-node rect { fill: var(--glass-strong); stroke: var(--line-strong); }
+.map-node text { fill: var(--muted); font-family: var(--mono); font-size: 9px; letter-spacing: .35px; }
+.map-hardware rect { stroke: #8bb0d8; }
+.map-software rect { stroke: #a794df; }
+.map-intelligence rect { stroke: #d8bf70; }
+.map-system rect { stroke: #94a7c9; }
+.map-core circle:first-child { fill: var(--glass); stroke: var(--copper); stroke-width: 1.4; }
+.map-core path { stroke: var(--copper); stroke-width: 1.2; }
+.map-core circle:last-child { fill: var(--sage); }
+@media (prefers-reduced-motion:no-preference) {
+  .d-process-packet { animation: process-pulse 2.8s ease-in-out infinite; }
+  .packet-b { animation-delay: .7s; }
+  .packet-c { animation-delay: 1.4s; }
+  .packet-d { animation-delay: 2.1s; }
+  .map-core { animation: map-core-pulse 4.6s ease-in-out infinite; transform-origin: center; transform-box: fill-box; }
+}
+@keyframes process-pulse {
+  0%,100% { opacity: .2; transform: scale(.72); }
+  50% { opacity: .92; transform: scale(1.3); }
+}
+@keyframes map-core-pulse {
+  0%,100% { opacity: .82; transform: scale(.95); }
+  50% { opacity: 1; transform: scale(1.04); }
+}
+@media (max-width:720px) {
+  .about-diagram {
+    width: min(285px,100%);
+    height: 145px;
+    transform: none;
+    margin: 14px 0 10px;
+  }
+}
+
+/* Existing project cards become layered surfaces rather than opaque blocks. */
+.project-card {
+  background: var(--glass);
+  border-color: var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px) saturate(1.06);
+  -webkit-backdrop-filter: blur(18px) saturate(1.06);
+}
+.project-info,
+.recognition,
+.workflow-art,
+.workflow-prompt,
+.demo-browser,
+.project-dialog,
+.command-dialog,
+.dialog-topbar {
+  background: var(--glass);
+  backdrop-filter: blur(18px) saturate(1.06);
+  -webkit-backdrop-filter: blur(18px) saturate(1.06);
+}
+.project-info,
+.recognition,
+.workflow-art,
+.project-dialog,
+.command-dialog {
+  box-shadow: var(--shadow);
+}
+.workflow-art .art-header,
+.workflow-art .art-bottom {
+  background: rgba(255,255,255,.2);
+  border-color: var(--line);
+}
+:root[data-theme=dark] .workflow-art .art-header,
+:root[data-theme=dark] .workflow-art .art-bottom {
+  background: rgba(255,255,255,.03);
+}
+.workflow-prompt>button {
+  background: #7763bf;
+}
+.workflow-prompt>button:hover {
+  background: #658ec3;
+}
+.workflow-steps i,
+.mini-dots {
+  color: #92a6ce;
+}
+.workflow-steps .is-current b {
+  background: #7763bf;
+  border-color: #7763bf;
+}
+.workflow-steps .is-complete b {
+  background: #dfe8f6;
+}
+.demo-dashboard {
+  --demo-accent: #7d96d8;
+}
+
+/* The compiler keeps contrast, but switches from olive to violet and blue. */
+.compiler-art {
+  background-color: #e8f0fa;
+  background-image: radial-gradient(rgba(112,143,194,.2) .7px,transparent .7px);
+  color: #364766;
+}
+:root[data-theme=dark] .compiler-art {
+  background-color: #191b33;
+  color: #eff0e6;
+}
+.openassembler-logo {
+  background: #14172e;
+}
+.compiler-art .art-header { border-bottom-color: rgba(106,132,177,.22); }
+.compiler-art .art-header .icon { color: #8a75c4; }
+.compiler-art .art-header>span:last-child { color: #62789c; opacity: .88; }
+.compiler-caption { color: #5f769d; }
+.compiler-art .art-bottom { color: #647da5; }
+.compiler-art .compiler-stages button { color: #5f7297; }
+.compiler-art .compiler-stages button strong { color: #425677; }
+.compiler-art .compiler-stages button.is-active {
+  background: rgba(118,99,189,.12);
+  border-color: rgba(118,99,189,.3);
+  color: #4f6289;
+}
+.compiler-art .compiler-stages button.is-active strong { color: #3f4d72; }
+.compiler-art .compiler-stages>span,
+.compiler-art .preview-note { color: #7085aa; }
+:root[data-theme=dark] .compiler-art .art-header { border-bottom-color: #a1b08d20; }
+:root[data-theme=dark] .compiler-art .art-header .icon { color: #d39a7d; }
+:root[data-theme=dark] .compiler-art .art-header>span:last-child { color: inherit; opacity: .45; }
+:root[data-theme=dark] .compiler-caption { color: #b1b8a4; }
+:root[data-theme=dark] .compiler-art .art-bottom { color: #aab7df; }
+:root[data-theme=dark] .compiler-art .compiler-stages button { color: #9da9ce; }
+:root[data-theme=dark] .compiler-art .compiler-stages button strong { color: #d7dfff; }
+:root[data-theme=dark] .compiler-art .compiler-stages button.is-active { color: #ddd7ff; }
+:root[data-theme=dark] .compiler-art .compiler-stages button.is-active strong { color: #d7dfff; }
+:root[data-theme=dark] .compiler-art .compiler-stages>span,
+:root[data-theme=dark] .compiler-art .preview-note { color: #aab7df; }
+.terminal-window {
+  background: rgba(16,18,37,.78);
+  border-color: rgba(168,181,242,.24);
+  box-shadow: 0 16px 38px rgba(10,12,28,.28);
+}
+.terminal-top {
+  background: rgba(56,60,96,.72);
+  color: #c1caeb;
+}
+.terminal-dots i { background: #7183b3; }
+.terminal-dots i:first-child { background: #d4b864; }
+.terminal-dots i:nth-child(2) { background: #8aaee2; }
+pre { color: #e7ecff; }
+.code-comment { color: #9ca9cf; }
+.code-orange { color: #e8cd75; }
+.code-green { color: #8fc4ee; }
+.terminal-status { border-top-color: rgba(168,181,242,.18); color: #b0bee4; }
+.terminal-status i { background: #8fc4ee; }
+.compiler-stages button { color: #9da9ce; }
+.compiler-stages button strong { color: #d7dfff; }
+.compiler-stages button.is-active {
+  background: rgba(141,121,207,.2);
+  border-color: rgba(184,171,241,.34);
+  color: #ddd7ff;
+}
+.compiler-stages>span,
+.preview-note,
+.art-bottom { color: #aab7df; }
+
+/* A pale yellow contact band adds warmth without the prior orange/green treatment. */
+.contact-section {
+  background: var(--contact-bg);
+  color: var(--contact-ink);
+}
+.contact-section:before { content: none; }
+.contact-top .eyebrow,
+.contact-coordinate,
+.contact-main .serif-word,
+.copy-email,
+#copy-status,
+.contact-socials a {
+  color: var(--contact-ink);
+}
+.contact-top .status-dot {
+  background: var(--copper);
+  box-shadow: 0 0 0 4px rgba(118,99,189,.12);
+}
+.contact-arrow {
+  border-color: rgba(48,49,71,.2);
+  background: rgba(255,255,255,.18);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.contact-arrow:hover { background: rgba(255,255,255,.42); }
+.contact-bottom { border-top-color: rgba(48,49,71,.18); }
+.copy-email:hover,
+.contact-socials a:hover { color: var(--copper); }
+
+dialog {
+  background: var(--glass-strong);
+  backdrop-filter: blur(22px) saturate(1.08);
+  -webkit-backdrop-filter: blur(22px) saturate(1.08);
+}
+dialog::backdrop {
+  background: rgba(21,24,43,.46);
+  backdrop-filter: blur(12px);
+}
+.case-callout,
+.case-pipeline>div,
+.case-panel code,
+.command-results>a:hover,
+.command-results>a:focus-visible {
+  background: rgba(118,99,189,.09);
+}
+
+@keyframes fluid-drift {
+  0%,100% { transform: translate3d(0,0,0); }
+  50% { transform: translate3d(0,-8px,0); }
+}
+@keyframes badge-drift {
+  0%,100% { transform: translate3d(0,0,0); opacity: .84; }
+  50% { transform: translate3d(0,-2px,0); opacity: 1; }
+}
+@keyframes scroll-surface {
+  from { box-shadow: 0 6px 24px rgba(56,67,112,.06); border-color: rgba(118,99,189,.16); }
+  to { box-shadow: var(--shadow); border-color: var(--line-strong); }
+}
+@media (prefers-reduced-motion:no-preference) {
+  .hero-visual { animation: fluid-drift 12s ease-in-out infinite; }
+  .openassembler-logo { animation: badge-drift 8s ease-in-out infinite; }
+}
+@supports (animation-timeline:view()) {
+  @media (prefers-reduced-motion:no-preference) {
+    .project-card {
+      animation: scroll-surface linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 35%;
+    }
+  }
+}
